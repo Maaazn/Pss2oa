@@ -77,14 +77,6 @@ export default function App() {
     tryBoot();
   }, []);
 
-  const loadSample = useCallback(async (name = 'sample.iso') => {
-    try {
-      const res = await fetch(new URL(name, location.href));
-      const blob = await res.blob();
-      onPickFile(new File([blob], name, { type: 'application/octet-stream' }));
-    } catch {}
-  }, [onPickFile]);
-
   const onInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     if (f) onPickFile(f);
@@ -109,6 +101,15 @@ export default function App() {
           </span>
           <span className={`chip ${pads.length ? 'text-ps2-accent2 border-ps2-accent2/30' : ''}`}>
             🎮 {pads.length ? pads.length : isolated ? 'لا يوجد' : 'N/A'}
+          </span>
+          <span className={`chip ${core.status === 'ready' ? 'text-ps2-green border-ps2-green/30' : core.status === 'error' ? 'text-ps2-red border-ps2-red/30' : ''}`}>
+            {core.status === 'error'
+              ? 'تعذر تحميل النواة'
+              : core.status === 'loading'
+                ? 'تحميل Play!…'
+                : current
+                  ? '▶ نواة Play! نشطة'
+                  : '✦ Play! جاهز'}
           </span>
           <button className="btn" onClick={() => setCinema((c) => !c)} title="وضع السينما">
             {cinema ? 'إغلاق' : '🎬 سينما'}
@@ -146,6 +147,7 @@ export default function App() {
           <div className="flex flex-wrap items-center gap-2">
             <input ref={fileInput} type="file" accept=".iso,.cso,.chd,.isz,.bin,.elf" onChange={onInput} className="hidden" />
             <button className="btn btn-primary" onClick={() => fileInput.current?.click()}>📥 تحميل لعبة (ISO/CSO/CHD/BIN/ELF)</button>
+            <span className="text-[11px] text-ps2-muted">ISO محلي حقيقي فقط — لا توجد ألعاب أو BIOS ضمن الموقع</span>
             <button className="btn" disabled={!isolated} onClick={() => { const m = getModule(); m?.pause?.(); }}>⏸ إيقاف</button>
             <button className="btn" disabled={!isolated} onClick={() => { const m = getModule(); m?.resume?.(); }}>▶ استئناف</button>
             {current && <span className="chip text-ps2-gold border-ps2-gold/30">الآن: {current}</span>}
@@ -164,7 +166,7 @@ export default function App() {
           </div>
 
           <div className="min-h-0 flex-1 overflow-y-auto p-3">
-            {tab === 'library' && <LibraryTab library={library} onPick={(g) => onPickFile(g.file)} onBrowse={() => fileInput.current?.click()} onLoadSample={loadSample} />}
+            {tab === 'library' && <LibraryTab library={library} onPick={(g) => onPickFile(g.file)} onBrowse={() => fileInput.current?.click()} />}
             {tab === 'disc' && <DiscTab info={discInfo} inspecting={inspecting} />}
             {tab === 'controller' && <ControllerTab pads={pads} binding={binding} rebinding={rebinding} setRebinding={setRebinding} faceButtons={FACE_BUTTONS} isolated={isolated} />}
             {tab === 'controls' && <ControlsTab />}
@@ -195,16 +197,14 @@ function Logo() {
   );
 }
 
-function LibraryTab({ library, onPick, onBrowse, onLoadSample }: { library: GameEntry[]; onPick: (g: GameEntry) => void; onBrowse: () => void; onLoadSample: (name?: string) => void }) {
+function LibraryTab({ library, onPick, onBrowse }: { library: GameEntry[]; onPick: (g: GameEntry) => void; onBrowse: () => void }) {
   if (!library.length) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3 text-center text-ps2-muted">
         <div className="text-4xl opacity-30">💿</div>
         <div className="text-sm">لا توجد ألعاب بعد</div>
         <button className="btn btn-primary" onClick={onBrowse}>اختر ملف ISO / CSO / CHD</button>
-        <button className="btn" onClick={() => onLoadSample('sample.iso')}>جرّب قرص ISO نموذجي</button>
-        <button className="btn" onClick={() => onLoadSample('sample.cso')}>جرّب قرص CSO مضغوط</button>
-        <div className="text-[11px] text-ps2-muted/70">يدعم: ISO, CSO, CHD, ISZ, BIN, ELF — بدون BIOS</div>
+        <div className="max-w-52 text-[11px] leading-relaxed text-ps2-muted/70">اختر ملف لعبة حقيقياً تملك حق استخدامه. يدعم: ISO, CSO, CHD, ISZ, BIN, ELF — بدون BIOS خارجي.</div>
       </div>
     );
   }

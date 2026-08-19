@@ -82,12 +82,18 @@ export async function initCore(canvas: HTMLCanvasElement): Promise<PlayModule> {
     const coreMod = await import(/* @vite-ignore */ base + 'core/Play.js');
     const PlayFactory = coreMod.default;
     const M = (await PlayFactory(overrides)) as PlayModule;
-    try { M.FS.mkdir('/work'); } catch {}
-    emit({ status: 'init-vm', fps: 0, message: 'تهيئة الآلة الافتراضية…' });
-    M.ccall('initVm', '', [], []);
+    // Keep the module and its range-reading device available before initVm.
+    // Play!'s official browser integration publishes these first, because initVm
+    // can continue its asynchronous VM initialization while a user selects a disc.
     module = M;
-    emit({ status: 'ready', fps: 0, message: 'النواة جاهزة — اختر لعبة.' });
+    try { M.FS.mkdir('/work'); } catch {}
+    M.discImageDevice = new DiscDevice(M);
+    emit({ status: 'ready', fps: 0, message: 'نواة Play! جاهزة — اختر ISO محلياً.' });
+    // initVm enters Play!'s long-running emulation loop. Start the frame monitor
+    // before that call, otherwise the Promise below may not resolve until a disc
+    // exits and the UI would misleadingly remain at 0 FPS.
     startFpsLoop(M);
+    M.ccall('initVm', '', [], []);
     return M;
   })();
 
