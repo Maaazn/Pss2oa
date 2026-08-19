@@ -44,7 +44,7 @@ export function isCrossOriginIsolated(): boolean {
 
 export function getCoreStatus(): 'isolated-missing' | 'loading' | 'ready' | 'error' {
   if (!isCrossOriginIsolated()) return 'isolated-missing';
-  if (module) return 'ready';
+  if (module && coreReady) return 'ready';
   if (modulePromise) return 'loading';
   return 'loading';
 }
@@ -66,7 +66,9 @@ export async function initCore(canvas: HTMLCanvasElement): Promise<PlayModule> {
     emit({ status: 'isolated-missing', fps: 0, message: 'يحتاج عزل منشأ متقاطع (COOP/COEP). شغّل المشروع محلياً.' });
     throw new Error('cross-origin isolation required');
   }
-  if (module) return module;
+  // `module` is published before initVm for Play!'s pthread setup, but it is
+  // not safe to boot a disc until initVm has completed.
+  if (module && coreReady) return module;
   if (modulePromise) return modulePromise;
 
   modulePromise = (async () => {

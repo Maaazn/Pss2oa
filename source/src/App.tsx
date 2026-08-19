@@ -143,7 +143,9 @@ export default function App() {
           {/* Transport */}
           <div className="flex flex-wrap items-center gap-2">
             <input ref={fileInput} type="file" accept=".iso,.cso,.chd,.isz,.bin,.elf" onChange={onInput} className="hidden" />
-            <button className="btn btn-primary" onClick={() => fileInput.current?.click()}>📥 تحميل لعبة (ISO/CSO/CHD/BIN/ELF)</button>
+            <button className="btn btn-primary" disabled={!isolated || core.status !== 'ready'} onClick={() => fileInput.current?.click()}>
+              {core.status === 'ready' ? '📥 تحميل لعبة (ISO/CSO/CHD/BIN/ELF)' : 'تهيئة Play!…'}
+            </button>
             <span className="text-[11px] text-ps2-muted">ISO محلي حقيقي فقط — لا توجد ألعاب أو BIOS ضمن الموقع</span>
             <button className="btn" disabled={!isolated} onClick={() => { const m = getModule(); m?.pause?.(); }}>⏸ إيقاف</button>
             <button className="btn" disabled={!isolated} onClick={() => { const m = getModule(); m?.resume?.(); }}>▶ استئناف</button>
