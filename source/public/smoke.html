@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pss2oa · Play! Core Smoke Test</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { margin: 0; background: #0b0e14; color: #9be7b0; font: 14px ui-monospace, SFMono-Regular, Menlo, monospace; padding: 18px; }
+    h1 { color: #e9f8ff; font-size: 18px; margin: 0 0 12px; }
+    #log { white-space: pre-wrap; line-height: 1.6; overflow-wrap: anywhere; }
+    canvas { display: block; width: min(640px, 100%); height: auto; margin-top: 16px; background: #000; border: 1px solid #263546; }
+    .note { color: #89a0af; margin: 0 0 16px; }
+  </style>
+</head>
+<body>
+  <h1>Play! core smoke test</h1>
+  <p class="note">This verifies only Play.js, Play.wasm, pthread startup, and initVm on this exact Pages deployment. It does not load an ISO.</p>
+  <div id="log">Starting…</div>
+  <canvas id="canvas" width="640" height="480"></canvas>
+  <script type="module">
+    const out = document.getElementById('log');
+    const log = (message) => {
+      out.textContent += `\n${message}`;
+      console.log('[Pss2oa smoke]', message);
+    };
+
+    try {
+      log(`crossOriginIsolated: ${self.crossOriginIsolated === true}`);
+      log(`SharedArrayBuffer: ${typeof SharedArrayBuffer}`);
+      log('Importing Play.js…');
+      const Play = (await import('./core/Play.js')).default;
+      const base = location.origin + location.pathname.replace(/[^/]*$/, '');
+      const M = await Play({
+        locateFile: (path) => base + 'core/' + path,
+        mainScriptUrlOrBlob: base + 'core/Play.js',
+        canvas: document.getElementById('canvas'),
+        print: (text) => log(`stdout: ${text}`),
+        printErr: (text) => log(`stderr: ${text}`),
+      });
+      log('Play.wasm module ready.');
+      M.ccall('initVm', '', [], []);
+      log(`initVm returned. bootDiscImage: ${typeof M.bootDiscImage}`);
+      log('SMOKE TEST PASSED');
+    } catch (error) {
+      log(`SMOKE TEST FAILED: ${error?.message || String(error)}`);
+    }
+  </script>
+</body>
+</html>
