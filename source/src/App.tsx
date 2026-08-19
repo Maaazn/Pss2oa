@@ -99,8 +99,8 @@ export default function App() {
       <header className="flex items-center gap-3 border-b border-ps2-border bg-ps2-panel/60 px-4 py-3 backdrop-blur">
         <Logo />
         <div className="mr-1">
-          <div className="text-sm font-bold tracking-tight">PS2 Web <span className="text-ps2-muted font-normal">· Play! Core</span></div>
-          <div className="text-[11px] text-ps2-muted">محاكي PlayStation 2 داخل المتصفح — نواة Play! الحقيقية</div>
+          <div className="text-sm font-bold tracking-tight">Pss2oa <span className="text-ps2-muted font-normal">· Play! Web Core</span></div>
+          <div className="text-[11px] text-ps2-muted">واجهة محاكي PlayStation 2 مستقلة داخل المتصفح</div>
         </div>
         <div className="mr-auto flex items-center gap-2">
           <span className={`chip ${core.status === 'running' ? 'text-ps2-green border-ps2-green/30' : ''}`}>
@@ -280,17 +280,18 @@ function ControlsTab() {
 function AboutTab() {
   return (
     <div className="space-y-3 text-xs text-ps2-muted leading-relaxed">
-      <p>محاكي <strong className="text-white">PlayStation 2</strong> حقيقي يعمل في المتصفح، مبني على نواة <strong className="text-ps2-accent2">Play!</strong> مفتوحة المصدر (C++ → WebAssembly عبر Emscripten).</p>
-      <p className="text-ps2-gold">✦ ما يميّزه عن النسخة الرسمية:</p>
+      <p><strong className="text-white">Pss2oa</strong> واجهة وتكامل ويب مستقلان لمحاكاة <strong className="text-white">PlayStation 2</strong>، ويستخدمان نواة <strong className="text-ps2-accent2">Play!</strong> المفتوحة المصدر (C++ → WebAssembly عبر Emscripten).</p>
+      <p className="text-ps2-gold">✦ ما يضيفه Pss2oa إلى تجربة الويب:</p>
       <ul className="space-y-1 pr-4">
-        <li>• طبقة تحكّم كاملة: يد بلوثوث/USB عبر Web Gamepad (الرسمية لوحة مفاتيح فقط).</li>
+        <li>• طبقة تحكّم كاملة: يد بلوثوث/USB عبر Web Gamepad.</li>
         <li>• إعادة ربط الأزرار لكل زر.</li>
         <li>• بث ISO ذكي: قراءة بالنطاقات فقط عبر <code>File.slice()</code> — لا تحميل كامل للـ RAM.</li>
         <li>• واجهة عربية RTL بطابع PS2، مكتبة ألعاب، وضع سينما.</li>
       </ul>
-      <p className="text-ps2-muted/70">~400 لعبة قابلة للتشغيل، بدون BIOS. Chrome/Firefox موصى به. هذا مشروع تجريبي تعليمي.</p>
+      <p className="text-ps2-muted/70">يعمل بلا BIOS خارجي، لكن التوافق والأداء يختلفان حسب العنوان والمتصفح والجهاز. Chrome/Firefox على الحاسوب موصى بهما. هذا مشروع تجريبي وتعليمي.</p>
+      <p className="text-ps2-muted/70">Pss2oa غير تابع لـPlay! أو Jean-Philip Desjardins ولا يحظى بتأييدهما. يُرجى استخدام صور ألعاب أو ELF تملك حق استعمالها فقط.</p>
       <div className="pt-2 text-[11px] text-ps2-muted/50">
-        المصدر: <a className="text-ps2-accent2 underline" href="https://github.com/jpd002/Play-" target="_blank" rel="noreferrer">github.com/jpd002/Play-</a> ·
+        النواة التقنية: <a className="text-ps2-accent2 underline" href="https://github.com/jpd002/Play-" target="_blank" rel="noreferrer">github.com/jpd002/Play-</a> ·
         النسخة الرسمية: <a className="text-ps2-accent2 underline" href="https://playjs.purei.org" target="_blank" rel="noreferrer">playjs.purei.org</a>
       </div>
     </div>
