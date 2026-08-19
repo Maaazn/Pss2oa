@@ -17,7 +17,7 @@
   <h1>Play! core smoke test</h1>
   <p class="note">This verifies only Play.js, Play.wasm, pthread startup, and initVm on this exact Pages deployment. It does not load an ISO.</p>
   <div id="log">Starting…</div>
-  <canvas id="canvas" width="640" height="480"></canvas>
+  <canvas id="outputCanvas" width="640" height="480"></canvas>
   <script type="module">
     const out = document.getElementById('log');
     const log = (message) => {
@@ -34,7 +34,7 @@
       const M = await Play({
         locateFile: (path) => base + 'core/' + path,
         mainScriptUrlOrBlob: base + 'core/Play.js',
-        canvas: document.getElementById('canvas'),
+        canvas: document.getElementById('outputCanvas'),
         print: (text) => log(`stdout: ${text}`),
         printErr: (text) => log(`stderr: ${text}`),
       });

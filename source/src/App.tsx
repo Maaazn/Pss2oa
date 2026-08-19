@@ -128,7 +128,7 @@ export default function App() {
         {/* Display column */}
         <section className="flex min-h-0 flex-col gap-3">
           <div className="relative scanline overflow-hidden rounded-xl border border-ps2-border bg-black">
-            <canvas id="canvas" ref={canvasRef} width={640} height={480} className="emu-canvas" tabIndex={0} />
+            <canvas id="outputCanvas" ref={canvasRef} width={640} height={480} className="emu-canvas" tabIndex={0} />
             {!isolated && (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/70 text-center p-6">
                 <div className="text-4xl opacity-30">🎮</div>
