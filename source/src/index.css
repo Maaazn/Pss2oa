@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  background: #0a0b10;
+  color: #e6e8ef;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Ambient background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(900px 500px at 15% -10%, rgba(30, 215, 255, 0.08), transparent 60%),
+    radial-gradient(700px 400px at 100% 0%, rgba(0, 112, 209, 0.10), transparent 55%),
+    radial-gradient(800px 600px at 50% 120%, rgba(230, 181, 74, 0.05), transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+#root { position: relative; z-index: 1; }
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-thumb { background: #2a2c40; border-radius: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+@layer components {
+  .panel {
+    @apply rounded-xl border border-ps2-border bg-ps2-panel/80 backdrop-blur-sm;
+  }
+  .panel-2 {
+    @apply rounded-xl border border-ps2-border bg-ps2-panel2/80;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-ps2-border
+      bg-ps2-panel2 px-3 py-2 text-sm font-medium text-ps2-muted transition
+      hover:border-ps2-accent2/60 hover:text-white hover:bg-ps2-panel;
+  }
+  .btn-primary {
+    @apply border-ps2-accent/50 bg-ps2-accent/15 text-ps2-accent2 hover:bg-ps2-accent/25;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-ps2-border
+      bg-ps2-panel2 px-2.5 py-1 text-xs text-ps2-muted;
+  }
+  .label { @apply text-xs font-medium uppercase tracking-wider text-ps2-muted; }
+}
+
+/* Emulator canvas */
+.emu-canvas {
+  background: #000;
+  image-rendering: pixelated;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  max-height: 70vh;
+  display: block;
+  border-radius: 10px;
+}
+
+.cinema {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cinema .emu-canvas { max-height: 100vh; max-width: 100vw; aspect-ratio: 4/3; width: auto; }
+
+@keyframes pulse-soft { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
+.pulse-soft { animation: pulse-soft 1.6s ease-in-out infinite; }
+
+@keyframes scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+.scanline::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent, rgba(30,215,255,0.06), transparent);
+  animation: scan 4s linear infinite;
+  pointer-events: none;
+}
