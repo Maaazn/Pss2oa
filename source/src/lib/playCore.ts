@@ -36,6 +36,7 @@ type Overrides = {
 
 let modulePromise: Promise<PlayModule> | null = null;
 let module: PlayModule | null = null;
+let coreReady = false;
 
 export function isCrossOriginIsolated(): boolean {
   return typeof self !== 'undefined' && (self as any).crossOriginIsolated === true;
@@ -82,24 +83,24 @@ export async function initCore(canvas: HTMLCanvasElement): Promise<PlayModule> {
     const coreMod = await import(/* @vite-ignore */ base + 'core/Play.js');
     const PlayFactory = coreMod.default;
     const M = (await PlayFactory(overrides)) as PlayModule;
-    // Keep the module and its range-reading device available before initVm.
-    // Play!'s official browser integration publishes these first, because initVm
-    // can continue its asynchronous VM initialization while a user selects a disc.
-    module = M;
     try { M.FS.mkdir('/work'); } catch {}
     M.discImageDevice = new DiscDevice(M);
-    emit({ status: 'ready', fps: 0, message: 'نواة Play! جاهزة — اختر ISO محلياً.' });
-    // initVm enters Play!'s long-running emulation loop. Start the frame monitor
-    // before that call, otherwise the Promise below may not resolve until a disc
-    // exits and the UI would misleadingly remain at 0 FPS.
-    startFpsLoop(M);
+    // Play!.js publishes its module before initVm.  However, its file picker
+    // becomes usable only after the init action resolves; keep that same gate
+    // here so an ISO cannot race the VM startup handshake.
+    module = M;
     M.ccall('initVm', '', [], []);
+    coreReady = true;
+    startFpsLoop(M);
+    emit({ status: 'ready', fps: 0, message: 'نواة Play! جاهزة — اختر ISO محلياً.' });
     return M;
   })();
 
   try {
     return await modulePromise;
   } catch (e) {
+    module = null;
+    coreReady = false;
     modulePromise = null;
     emit({ status: 'error', fps: 0, message: 'فشل تحميل النواة: ' + (e as Error).message });
     throw e;
@@ -123,6 +124,12 @@ export function stopFpsLoop() {
 
 export function getModule(): PlayModule | null {
   return module;
+}
+
+export async function waitForCore(): Promise<PlayModule> {
+  if (module && coreReady) return module;
+  if (!modulePromise) throw new Error('Core initialization has not started.');
+  return modulePromise;
 }
 
 export function bootFile(file: File) {

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import {
-  initCore, onCoreState, bootFile, isCrossOriginIsolated, getModule,
+  initCore, onCoreState, bootFile, isCrossOriginIsolated, getModule, waitForCore,
 } from './lib/playCore';
 import { GamepadLayer, DEFAULT_BINDING, type PS2Button, type GamepadInfo } from './lib/gamepad';
 import { inspectDisc, type DiscInfo } from './lib/discInspector';
@@ -69,12 +69,9 @@ export default function App() {
     setDiscInfo(null);
     setInspecting(true);
     inspectDisc(file).then(setDiscInfo).catch((e) => setDiscInfo({ format: 'خطأ', volumeLabel: '', bootPath: '', serial: '', region: '', systemCnf: '', files: [], sizeBytes: file.size, warnings: [e.message] })).finally(() => setInspecting(false));
-    const tryBoot = () => {
-      const m = getModule();
-      if (m) { bootFile(file); }
-      else { setTimeout(tryBoot, 300); }
-    };
-    tryBoot();
+    waitForCore()
+      .then(() => bootFile(file))
+      .catch((error) => setCore({ status: 'error', fps: 0, message: `تعذر تجهيز Play!: ${error.message}` }));
   }, []);
 
   const onInput = (e: React.ChangeEvent<HTMLInputElement>) => {
