@@ -4,6 +4,10 @@
 
 > Pss2oa is **not affiliated with, endorsed by, maintained by, or an official release of Play! or Jean-Philip Desjardins**. The project thanks Play! for its foundational technical work on high-level PlayStation 2 emulation.
 
+## Live version
+
+The verified production build is available at **[pss2oa.pages.dev](https://pss2oa.pages.dev/?v=68fd3b7)**.
+
 ## What is included
 
 The project includes a compiled Play! WebAssembly core under `public/core/`, a browser interface, ISO/CSO inspection utilities, and a controller mapping layer. Pss2oa does not contain PlayStation 2 BIOS files, commercial games, game keys, or download links.
